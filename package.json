@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "@emotion/react": "latest",
+    "@emotion/styled": "latest",
+    "@mui/material": "latest",
+    "@mui/x-data-grid": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "typescript": "latest",
+    "@mui/icons-material": "6.1.2",
+    "date-fns": "4.1.0"
+  },
+  "devDependencies": {
+    "react-scripts": "latest"
+  },
+  "main": "index.tsx",
+  "scripts": {
+    "build": "react-scripts build",
+    "eject": "react-scripts eject",
+    "start": "react-scripts start",
+    "test": "react-scripts test"
+  }
+}
