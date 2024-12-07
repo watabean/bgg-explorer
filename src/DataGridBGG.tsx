@@ -2,7 +2,6 @@ import * as React from "react";
 import { useState } from "react";
 import { format } from "date-fns";
 
-// Material-UI components
 import {
   Box,
   Button,
@@ -17,16 +16,14 @@ import {
   useTheme,
 } from "@mui/material";
 
-// Material-UI Data Grid
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
-// MUI icons
 import FilterListIcon from "@mui/icons-material/FilterList";
 import ScaleIcon from "@mui/icons-material/Scale";
 import ElderlyIcon from "@mui/icons-material/Elderly";
 import PeopleIcon from "@mui/icons-material/People";
 import UpdateIcon from "@mui/icons-material/Update";
-// Local imports
+
 import { rows } from "./testData";
 
 const initialFilterValues = {
@@ -86,7 +83,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
   },
 ];
 
-export default function DataGridDemo() {
+export default function DataGridBGG() {
   const [items, setItems] = useState(rows);
   const [filterValues, setFilterValues] = useState({
     ...initialFilterValues,
