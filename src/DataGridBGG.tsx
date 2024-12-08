@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 
 import {
@@ -24,7 +24,7 @@ import ElderlyIcon from "@mui/icons-material/Elderly";
 import PeopleIcon from "@mui/icons-material/People";
 import UpdateIcon from "@mui/icons-material/Update";
 
-import { rows } from "./testData";
+import { Item, useSheetData } from "./useSheetData";
 
 const initialFilterValues = {
   weight: [0, 5],
@@ -48,7 +48,7 @@ const marks = {
   ],
 };
 
-const columns: GridColDef<(typeof rows)[number]>[] = [
+const columns: GridColDef<Item>[] = [
   { field: "rank", headerName: "ランク", width: 60 },
   {
     field: "title",
@@ -60,10 +60,11 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       </Link>
     ),
   },
-  { field: "titleJP", headerName: "タイトル", width: 200 },
+  { field: "titleJapanese", headerName: "タイトル", width: 200 },
   { field: "year", headerName: "出版年", width: 100 },
-  { field: "rating", headerName: "レート", width: 100 },
+  { field: "score", headerName: "レート", width: 100 },
   { field: "weight", headerName: "重量", width: 100 },
+  { field: "bestPlayers", headerName: "ベスト人数", width: 100 },
   {
     field: "designers",
     headerName: "デザイナー",
@@ -84,7 +85,15 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
 ];
 
 export default function DataGridBGG() {
-  const [items, setItems] = useState(rows);
+  const [items, setItems] = useState<Item[]>([]);
+  const { data = [] } = useSheetData();
+
+  useEffect(() => {
+    if (data) { 
+      setItems(data);
+    }
+  }, [data]);
+  
   const [filterValues, setFilterValues] = useState({
     ...initialFilterValues,
   });
@@ -105,7 +114,7 @@ export default function DataGridBGG() {
           JSON.stringify(newValues) !== JSON.stringify(initialFilterValues)
         );
         setItems(
-          rows
+          data
             .filter(
               (item) =>
                 newValues.weight[0] <= Number(item.weight) &&
@@ -115,6 +124,11 @@ export default function DataGridBGG() {
               (item) =>
                 newValues.year[0] <= Number(item.year) &&
                 Number(item.year) <= newValues.year[1]
+            )
+            .filter(
+              (item) =>
+                newValues.players[0] <= Number(item.bestPlayers) &&
+                Number(item.bestPlayers) <= newValues.players[1]
             )
         );
         return newValues;
@@ -136,8 +150,6 @@ export default function DataGridBGG() {
             variant="body2"
             sx={{ display: "flex", alignItems: "center" }}
           >
-            <UpdateIcon />
-            yyyy/mm/dd
           </Typography>
         </Box>
         <DataGrid
