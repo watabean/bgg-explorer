@@ -22,7 +22,6 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import ScaleIcon from "@mui/icons-material/Scale";
 import ElderlyIcon from "@mui/icons-material/Elderly";
 import PeopleIcon from "@mui/icons-material/People";
-import UpdateIcon from "@mui/icons-material/Update";
 
 import { Item, useSheetData } from "./useSheetData";
 
@@ -73,11 +72,7 @@ const columns: GridColDef<Item>[] = [
     renderCell: (params) => (
       <Stack direction="row" gap={0.25} sx={{ flexWrap: "wrap" }}>
         {params.row.designers.map((designer, index) => (
-          <Chip
-            key={`${index}-${designer}`}
-            label={designer}
-            variant="outlined"
-          />
+          <Chip key={`${index}-${designer}`} label={designer} variant="outlined" />
         ))}
       </Stack>
     ),
@@ -89,11 +84,11 @@ export default function DataGridBGG() {
   const { data = [] } = useSheetData();
 
   useEffect(() => {
-    if (data) { 
+    if (data) {
       setItems(data);
     }
   }, [data]);
-  
+
   const [filterValues, setFilterValues] = useState({
     ...initialFilterValues,
   });
@@ -102,55 +97,34 @@ export default function DataGridBGG() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const handleChange =
-    (filterType: "weight" | "year" | "players") =>
-    (_event: Event, newValue: number | number[]) => {
-      setFilterValues((prevValues) => {
-        const newValues = {
-          ...prevValues,
-          [filterType]: newValue,
-        };
-        setIsChanged(
-          JSON.stringify(newValues) !== JSON.stringify(initialFilterValues)
-        );
-        setItems(
-          data
-            .filter(
-              (item) =>
-                newValues.weight[0] <= Number(item.weight) &&
-                Number(item.weight) <= newValues.weight[1]
-            )
-            .filter(
-              (item) =>
-                newValues.year[0] <= Number(item.year) &&
-                Number(item.year) <= newValues.year[1]
-            )
-            .filter(
-              (item) =>
-                newValues.players[0] <= Number(item.bestPlayers) &&
-                Number(item.bestPlayers) <= newValues.players[1]
-            )
-        );
-        return newValues;
-      });
-    };
+  const handleChange = (filterType: "weight" | "year" | "players") => (_event: Event, newValue: number | number[]) => {
+    setFilterValues((prevValues) => {
+      const newValues = {
+        ...prevValues,
+        [filterType]: newValue,
+      };
+      setIsChanged(JSON.stringify(newValues) !== JSON.stringify(initialFilterValues));
+      setItems(
+        data
+          .filter((item) => newValues.weight[0] <= Number(item.weight) && Number(item.weight) <= newValues.weight[1])
+          .filter((item) => newValues.year[0] <= Number(item.year) && Number(item.year) <= newValues.year[1])
+          .filter(
+            (item) =>
+              newValues.players[0] <= Number(item.bestPlayers) && Number(item.bestPlayers) <= newValues.players[1],
+          ),
+      );
+      return newValues;
+    });
+  };
 
   return (
     <>
       <Box sx={{ width: "100%" }}>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography
-            variant="h1"
-            sx={{ fontSize: isMobile ? "1.5rem" : "3rem" }}
-          >
+          <Typography variant="h1" sx={{ fontSize: isMobile ? "1.5rem" : "3rem" }}>
             BGG Explorer
           </Typography>
-          <Typography
-            color="grey"
-            variant="body2"
-            sx={{ display: "flex", alignItems: "center" }}
-          >
-          </Typography>
+          <Typography color="grey" variant="body2" sx={{ display: "flex", alignItems: "center" }}></Typography>
         </Box>
         <DataGrid
           getRowHeight={() => "auto"}

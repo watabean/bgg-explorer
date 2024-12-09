@@ -41,7 +41,7 @@ export function useSheetData() {
           params: {
             key: import.meta.env.VITE_GOOGLE_SHEETS_API_KEY,
           },
-        }
+        },
       );
       // 1行目はヘッダー行なので飛ばす
       return createItem(response.data.values.slice(1));

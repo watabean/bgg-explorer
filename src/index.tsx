@@ -9,9 +9,9 @@ const queryClient = new QueryClient();
 ReactDOM.createRoot(document.querySelector("#root")!).render(
   <React.StrictMode>
     <StyledEngineProvider injectFirst>
-    <QueryClientProvider client={queryClient}>
-      <DataGridBGG />
+      <QueryClientProvider client={queryClient}>
+        <DataGridBGG />
       </QueryClientProvider>
     </StyledEngineProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
