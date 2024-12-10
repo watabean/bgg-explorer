@@ -25,7 +25,13 @@ import PeopleIcon from "@mui/icons-material/People";
 
 import { Item, useSheetData } from "./useSheetData";
 
-const initialFilterValues = {
+type FilterType = {
+  weight: [number, number];
+  year: [number, number];
+  players: [number, number];
+};
+
+const initialFilterValues: FilterType = {
   weight: [0, 5],
   year: [1991, parseInt(format(new Date(), "yyyy"))],
   players: [0, 7],
@@ -97,6 +103,17 @@ export default function DataGridBGG() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const filterItems = (filter: FilterType) => {
+    setItems(
+      data
+        .filter((item) => filter.weight[0] <= Number(item.weight) && Number(item.weight) <= filter.weight[1])
+        .filter((item) => filter.year[0] <= Number(item.year) && Number(item.year) <= filter.year[1])
+        .filter((item) =>
+          item.bestPlayers.some((player) => filter.players[0] <= player && player <= filter.players[1]),
+        ),
+    );
+  };
+
   const handleChange = (filterType: "weight" | "year" | "players") => (_event: Event, newValue: number | number[]) => {
     setFilterValues((prevValues) => {
       const newValues = {
@@ -104,15 +121,7 @@ export default function DataGridBGG() {
         [filterType]: newValue,
       };
       setIsChanged(JSON.stringify(newValues) !== JSON.stringify(initialFilterValues));
-      setItems(
-        data
-          .filter((item) => newValues.weight[0] <= Number(item.weight) && Number(item.weight) <= newValues.weight[1])
-          .filter((item) => newValues.year[0] <= Number(item.year) && Number(item.year) <= newValues.year[1])
-          .filter(
-            (item) =>
-              newValues.players[0] <= Number(item.bestPlayers) && Number(item.bestPlayers) <= newValues.players[1],
-          ),
-      );
+      filterItems(newValues);
       return newValues;
     });
   };
@@ -216,6 +225,7 @@ export default function DataGridBGG() {
               onClick={() => {
                 setFilterValues(initialFilterValues);
                 setIsChanged(false);
+                filterItems(initialFilterValues);
               }}
             >
               リセット
