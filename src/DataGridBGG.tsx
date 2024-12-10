@@ -136,6 +136,9 @@ export default function DataGridBGG() {
           <Typography color="grey" variant="body2" sx={{ display: "flex", alignItems: "center" }}></Typography>
         </Box>
         <DataGrid
+          sx={{
+            width: "90%",
+          }}
           getRowHeight={() => "auto"}
           disableColumnFilter
           disableRowSelectionOnClick
