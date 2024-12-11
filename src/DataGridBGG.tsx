@@ -136,9 +136,6 @@ export default function DataGridBGG() {
           <Typography color="grey" variant="body2" sx={{ display: "flex", alignItems: "center" }}></Typography>
         </Box>
         <DataGrid
-          sx={{
-            width: "90%",
-          }}
           getRowHeight={() => "auto"}
           disableColumnFilter
           disableRowSelectionOnClick
@@ -148,7 +145,7 @@ export default function DataGridBGG() {
         />
       </Box>
       <Fab
-        sx={{ position: "fixed", bottom: 16, right: 16 }}
+        sx={{ position: "fixed", bottom: 50, right: 50 }}
         onClick={() => setOpen(true)}
         color={isChanged ? "warning" : "default"}
       >
@@ -228,8 +225,10 @@ export default function DataGridBGG() {
               onClick={() => {
                 setFilterValues(initialFilterValues);
                 setIsChanged(false);
-                filterItems(initialFilterValues);
+                setItems(data);
               }}
+              variant={isChanged ? "contained" : "outlined"}
+              color={isChanged ? "warning" : "info"}
             >
               リセット
             </Button>
