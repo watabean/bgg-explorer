@@ -54,27 +54,29 @@ const marks = {
 };
 
 const columns: GridColDef<Item>[] = [
-  { field: "rank", headerName: "ランク", width: 60 },
+  { field: "rank", headerName: "#", width: 60, flex: 0.1 },
   {
     field: "title",
     headerName: "title",
-    width: 200,
+    minWidth: 200,
+    flex: 1,
     renderCell: (params) => (
       <Link href={params.row.url} target="_blank">
         {params.row.title}
       </Link>
     ),
   },
-  { field: "titleJapanese", headerName: "タイトル", width: 200 },
-  { field: "year", headerName: "出版年", width: 100 },
-  { field: "score", headerName: "レート", width: 100 },
-  { field: "weight", headerName: "重量", width: 100 },
-  { field: "bestPlayers", headerName: "ベスト人数", width: 100 },
+  { field: "titleJapanese", headerName: "タイトル", minWidth: 200, flex: 1 },
+  { field: "year", headerName: "出版年", minWidth: 100, flex: 0.2 },
+  { field: "score", headerName: "レート", minWidth: 100, flex: 0.2 },
+  { field: "weight", headerName: "重量", minWidth: 100, flex: 0.2 },
+  { field: "bestPlayers", headerName: "ベスト人数", minWidth: 100, flex: 0.4, sortable: false },
   {
     field: "designers",
     headerName: "デザイナー",
     sortable: false,
-    width: 300,
+    minWidth: 300,
+    flex: 1,
     renderCell: (params) => (
       <Stack direction="row" gap={0.25} sx={{ flexWrap: "wrap" }}>
         {params.row.designers.map((designer, index) => (
@@ -128,14 +130,12 @@ export default function DataGridBGG() {
 
   return (
     <>
-      <Box sx={{ width: "100%" }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="h1" sx={{ fontSize: isMobile ? "1.5rem" : "3rem" }}>
-            BGG Explorer
-          </Typography>
-          <Typography color="grey" variant="body2" sx={{ display: "flex", alignItems: "center" }}></Typography>
-        </Box>
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+        <Typography variant="h1" sx={{ fontSize: isMobile ? "1.5rem" : "3rem" }}>
+          BGG Explorer
+        </Typography>
         <DataGrid
+          sx={{ flexGrow: 1 }}
           getRowHeight={() => "auto"}
           disableColumnFilter
           disableRowSelectionOnClick
