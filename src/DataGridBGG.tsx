@@ -5,9 +5,12 @@ import { format } from "date-fns";
 import {
   Box,
   Button,
+  Checkbox,
   Chip,
   Drawer,
   Fab,
+  FormControlLabel,
+  FormGroup,
   Link,
   Slider,
   Stack,
@@ -28,13 +31,13 @@ import { Item, useSheetData } from "./useSheetData";
 type FilterType = {
   weight: [number, number];
   year: [number, number];
-  players: [number, number];
+  players: number[];
 };
 
 const initialFilterValues: FilterType = {
   weight: [0, 5],
   year: [1991, parseInt(format(new Date(), "yyyy"))],
-  players: [0, 7],
+  players: [1, 2, 3, 4, 5, 6, 7],
 };
 const marks = {
   weight: [
@@ -46,10 +49,6 @@ const marks = {
     { value: 2000, label: "2000年" },
     { value: 2010, label: "2010年" },
     { value: 2020, label: "2020年" },
-  ],
-  players: [
-    { value: 2, label: "2人" },
-    { value: 5, label: "5人" },
   ],
 };
 
@@ -110,17 +109,36 @@ export default function DataGridBGG() {
       data
         .filter((item) => filter.weight[0] <= Number(item.weight) && Number(item.weight) <= filter.weight[1])
         .filter((item) => filter.year[0] <= Number(item.year) && Number(item.year) <= filter.year[1])
-        .filter((item) =>
-          item.bestPlayers.some((player) => filter.players[0] <= player && player <= filter.players[1]),
-        ),
+        .filter((item) => item.bestPlayers.some((player) => filter.players.includes(player))),
     );
   };
 
-  const handleChange = (filterType: "weight" | "year" | "players") => (_event: Event, newValue: number | number[]) => {
+  const handleSliderChange =
+    (filterType: "weight" | "year") => (_event: Event | React.ChangeEvent, newValue: number | number[]) => {
+      setFilterValues((prevValues) => {
+        const newValues = {
+          ...prevValues,
+          [filterType]: newValue,
+        };
+        setIsChanged(JSON.stringify(newValues) !== JSON.stringify(initialFilterValues));
+        filterItems(newValues);
+        return newValues;
+      });
+    };
+
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>, x: number) => {
+    const { checked } = event.target;
     setFilterValues((prevValues) => {
+      const playersSet = new Set(prevValues.players);
+
+      if (checked) {
+        playersSet.add(x);
+      } else {
+        playersSet.delete(x);
+      }
       const newValues = {
         ...prevValues,
-        [filterType]: newValue,
+        players: Array.from(playersSet).sort(),
       };
       setIsChanged(JSON.stringify(newValues) !== JSON.stringify(initialFilterValues));
       filterItems(newValues);
@@ -165,7 +183,7 @@ export default function DataGridBGG() {
             <Slider
               getAriaLabel={() => "重さ"}
               value={filterValues.weight}
-              onChange={handleChange("weight")}
+              onChange={handleSliderChange("weight")}
               valueLabelDisplay="auto"
               min={initialFilterValues.weight[0]}
               max={initialFilterValues.weight[1]}
@@ -186,7 +204,7 @@ export default function DataGridBGG() {
             <Slider
               getAriaLabel={() => "出版年"}
               value={filterValues.year}
-              onChange={handleChange("year")}
+              onChange={handleSliderChange("year")}
               valueLabelDisplay="auto"
               min={initialFilterValues.year[0]}
               max={initialFilterValues.year[1]}
@@ -203,16 +221,26 @@ export default function DataGridBGG() {
               ベスト人数
               <PeopleIcon />
             </Typography>
-            <Slider
-              getAriaLabel={() => "ベスト人数"}
-              value={filterValues.players}
-              onChange={handleChange("players")}
-              valueLabelDisplay="auto"
-              min={initialFilterValues.players[0]}
-              max={initialFilterValues.players[1]}
-              marks={marks.players}
-              valueLabelFormat={(val) => `${val}人`}
-            />
+            <FormGroup
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+              }}
+            >
+              {initialFilterValues.players.map((x) => (
+                <FormControlLabel
+                  sx={{ flexGrow: 0.1 }}
+                  key={x}
+                  label={`${x}人`}
+                  control={
+                    <Checkbox
+                      checked={filterValues.players.includes(x)}
+                      onChange={(event) => handleCheckboxChange(event, x)}
+                    />
+                  }
+                />
+              ))}
+            </FormGroup>
           </Box>
           <Box
             sx={{
