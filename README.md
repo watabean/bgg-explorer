@@ -1,11 +1,14 @@
 # bgg-explorer
 
-## architecture
+## Architecture
 ![](./architecture.drawio.svg)
+
+## Relatives
+https://github.com/watabean/bgg-scraping
 
 ## Before Installation
 
-- install volta
+install volta
 
 ## Installation
 
