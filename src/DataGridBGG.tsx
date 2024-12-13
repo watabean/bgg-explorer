@@ -148,7 +148,7 @@ export default function DataGridBGG() {
 
   return (
     <>
-      <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100dvh" }}>
         <Typography variant="h1" sx={{ fontSize: isMobile ? "1.5rem" : "3rem" }}>
           BGG Explorer
         </Typography>
