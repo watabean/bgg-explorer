@@ -39,5 +39,5 @@ Start the development server:
 npm start
 ```
 
-By default, the application will be available at http://localhost:3000.
+By default, the application will be available at http://localhost:5173/bgg-explorer/.  
 Use this to preview and interact with the project locally.
