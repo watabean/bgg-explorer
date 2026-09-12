@@ -4,6 +4,10 @@
 
 ![](./architecture.drawio.svg)
 
+Apps Script starts the daily Cloud Run Job without waiting for the long-running scraper. The job validates the result,
+replaces the `data` sheet, and records the successful refresh time in the `metadata` sheet. This application reads the
+published `data` range through the Google Sheets API.
+
 ## Relatives
 
 This project is related to [bgg-scraping](https://github.com/watabean/bgg-scraping), which focuses on scraping board game ranking data from BoardGameGeek.  
