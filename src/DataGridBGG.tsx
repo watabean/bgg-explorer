@@ -52,6 +52,23 @@ const marks = {
   ],
 };
 
+const formatLastUpdatedAt = (lastUpdatedAt: string): string | null => {
+  const date = new Date(lastUpdatedAt);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat("ja-JP", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(date);
+};
+
 const columns: GridColDef<Item>[] = [
   { field: "rank", headerName: "#", width: 60, flex: 0.1 },
   {
@@ -88,11 +105,11 @@ const columns: GridColDef<Item>[] = [
 
 export default function DataGridBGG() {
   const [items, setItems] = useState<Item[]>([]);
-  const { data = [] } = useSheetData();
+  const { data } = useSheetData();
 
   useEffect(() => {
     if (data) {
-      setItems(data);
+      setItems(data.items);
     }
   }, [data]);
 
@@ -103,10 +120,12 @@ export default function DataGridBGG() {
   const [isChanged, setIsChanged] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const formattedLastUpdatedAt = data?.lastUpdatedAt ? formatLastUpdatedAt(data.lastUpdatedAt) : null;
 
   const filterItems = (filter: FilterType) => {
+    const sourceItems = data?.items ?? [];
     setItems(
-      data
+      sourceItems
         .filter((item) => filter.weight[0] <= Number(item.weight) && Number(item.weight) <= filter.weight[1])
         .filter((item) => filter.year[0] <= Number(item.year) && Number(item.year) <= filter.year[1])
         .filter((item) => item.bestPlayers.some((player) => filter.players.includes(player))),
@@ -149,9 +168,23 @@ export default function DataGridBGG() {
   return (
     <>
       <Box sx={{ display: "flex", flexDirection: "column", height: "100dvh" }}>
-        <Typography variant="h1" sx={{ fontSize: isMobile ? "1.5rem" : "3rem" }}>
-          BGG Explorer
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            alignItems: isMobile ? "flex-start" : "baseline",
+            columnGap: 1.5,
+          }}
+        >
+          <Typography variant="h1" sx={{ fontSize: isMobile ? "1.5rem" : "3rem" }}>
+            BGG Explorer
+          </Typography>
+          {data?.lastUpdatedAt && formattedLastUpdatedAt && (
+            <Typography variant="caption" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
+              データ更新: <time dateTime={data.lastUpdatedAt}>{formattedLastUpdatedAt} JST</time>
+            </Typography>
+          )}
+        </Box>
         <DataGrid
           sx={{ flexGrow: 1 }}
           getRowHeight={() => "auto"}
@@ -253,7 +286,7 @@ export default function DataGridBGG() {
               onClick={() => {
                 setFilterValues(initialFilterValues);
                 setIsChanged(false);
-                setItems(data);
+                setItems(data?.items ?? []);
               }}
               variant={isChanged ? "contained" : "outlined"}
               color={isChanged ? "warning" : "info"}
