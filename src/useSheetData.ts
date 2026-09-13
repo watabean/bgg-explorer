@@ -56,17 +56,22 @@ export function useSheetData() {
   return useQuery({
     queryKey: ["sheetData"],
     queryFn: async (): Promise<SheetQueryData> => {
-      const [dataResponse, metadataResponse] = await Promise.all([
+      const [dataResult, metadataResult] = await Promise.allSettled([
         fetchSheetRange("data"),
         fetchSheetRange("metadata"),
       ]);
 
-      const dataRows = dataResponse.data.values ?? [];
-      const metadataRows = metadataResponse.data.values ?? [];
+      if (dataResult.status === "rejected") {
+        throw dataResult.reason;
+      }
+
+      const dataRows = dataResult.value.data.values ?? [];
+      const metadataRows = metadataResult.status === "fulfilled" ? metadataResult.value.data.values ?? [] : [];
 
       return {
         // 1行目はヘッダー行なので飛ばす
         items: createItem(dataRows.slice(1)),
+        // metadata は補助情報。取得できなくてもゲーム一覧は表示し続ける。
         lastUpdatedAt: getMetadataValue(metadataRows, "lastUpdatedAt"),
       };
     },
