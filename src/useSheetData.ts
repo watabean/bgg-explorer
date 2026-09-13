@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 interface SheetData {
-  values: string[][];
+  values?: string[][];
 }
 
 export type Item = {
@@ -16,6 +16,14 @@ export type Item = {
   bestPlayers: number[];
   titleJapanese: string;
 };
+
+type SheetQueryData = {
+  items: Item[];
+  lastUpdatedAt: string | null;
+};
+
+const SPREADSHEET_ID = "1DWXWf_8N1CbkxA6ezYcETIczQLg_vge3sHsPuHEApRQ";
+const SHEETS_API_BASE_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values`;
 
 const createItem = (data: string[][]): Item[] => {
   return data.map((row) => ({
@@ -31,20 +39,36 @@ const createItem = (data: string[][]): Item[] => {
   }));
 };
 
+const fetchSheetRange = (range: string) => {
+  return axios.get<SheetData>(`${SHEETS_API_BASE_URL}/${range}`, {
+    params: {
+      key: import.meta.env.VITE_GOOGLE_SHEETS_API_KEY,
+    },
+  });
+};
+
+const getMetadataValue = (rows: string[][], key: string): string | null => {
+  const row = rows.slice(1).find(([metadataKey]) => metadataKey === key);
+  return row?.[1] ?? null;
+};
+
 export function useSheetData() {
   return useQuery({
     queryKey: ["sheetData"],
-    queryFn: async () => {
-      const response = await axios.get<SheetData>(
-        "https://sheets.googleapis.com/v4/spreadsheets/1DWXWf_8N1CbkxA6ezYcETIczQLg_vge3sHsPuHEApRQ/values/data",
-        {
-          params: {
-            key: import.meta.env.VITE_GOOGLE_SHEETS_API_KEY,
-          },
-        },
-      );
-      // 1行目はヘッダー行なので飛ばす
-      return createItem(response.data.values.slice(1));
+    queryFn: async (): Promise<SheetQueryData> => {
+      const [dataResponse, metadataResponse] = await Promise.all([
+        fetchSheetRange("data"),
+        fetchSheetRange("metadata"),
+      ]);
+
+      const dataRows = dataResponse.data.values ?? [];
+      const metadataRows = metadataResponse.data.values ?? [];
+
+      return {
+        // 1行目はヘッダー行なので飛ばす
+        items: createItem(dataRows.slice(1)),
+        lastUpdatedAt: getMetadataValue(metadataRows, "lastUpdatedAt"),
+      };
     },
   });
 }
